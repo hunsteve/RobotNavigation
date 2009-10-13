@@ -126,6 +126,7 @@
     <Compile Include="UTILS\PointD.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="DirectShowLib-2005.dll" />
     <Content Include="finish.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
