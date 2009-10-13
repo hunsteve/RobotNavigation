@@ -89,9 +89,9 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\DiplomaMunka\Simulator.csproj">
-      <Project>{C559217D-AB8B-469D-BBC1-D6F2C5EC1920}</Project>
-      <Name>Simulator</Name>
+    <ProjectReference Include="..\NavigationSimulator\NavigationSimulator.csproj">
+      <Project>{0D293305-9003-454B-A2DC-044DE2AD63DB}</Project>
+      <Name>NavigationSimulator</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
