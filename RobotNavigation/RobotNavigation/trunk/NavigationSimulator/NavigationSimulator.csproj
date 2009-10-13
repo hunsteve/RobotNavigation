@@ -132,10 +132,10 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
-    <None Include="resources\back.raw">
+    <None Include="back.raw">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="resources\cam.raw">
+    <None Include="cam.raw">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <Compile Include="Properties\Settings.Designer.cs">
@@ -148,31 +148,31 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="DirectShowLib-2005.dll" />
-    <Content Include="finish.png" />
-    <Content Include="resources\back.png">
+    <Content Include="GUI\finish.png" />
+    <None Include="back.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="resources\background.png">
+    </None>
+    <None Include="background.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="resources\cam.png">
+    </None>
+    <None Include="cam.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="resources\marker1.png">
+    </None>
+    <None Include="marker1.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="resources\marker2.png">
+    </None>
+    <None Include="marker2.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="resources\marker3.png">
+    </None>
+    <None Include="marker3.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="resources\marker4.png">
+    </None>
+    <None Include="marker4.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="resources\marker5.png">
+    </None>
+    <None Include="marker5.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Framework.2.0">
