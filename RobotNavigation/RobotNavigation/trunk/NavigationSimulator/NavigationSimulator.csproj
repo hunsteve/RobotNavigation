@@ -68,6 +68,10 @@
   <ItemGroup>
     <Compile Include="BPTT\CarModelInput.cs" />
     <Compile Include="BPTT\CarModelState.cs" />
+    <Compile Include="BPTT\GridCarModelInput.cs" />
+    <Compile Include="BPTT\GridCarModelState.cs" />
+    <Compile Include="BPTT\GridMathModelSimulator.cs" />
+    <Compile Include="BPTT\IGridModelSimulator.cs" />
     <Compile Include="BPTT\IModelSimulator.cs" />
     <Compile Include="BPTT\MathModelSimulator.cs" />
     <Compile Include="BPTT\NeuralController.cs" />
