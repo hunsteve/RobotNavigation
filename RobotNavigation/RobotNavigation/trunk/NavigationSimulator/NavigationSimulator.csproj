@@ -93,6 +93,7 @@
     <Compile Include="BPTT\GridCarModelInput.cs" />
     <Compile Include="BPTT\GridCarModelState.cs" />
     <Compile Include="BPTT\GridMathModelSimulator.cs" />
+    <Compile Include="BPTT\GridNeuralController.cs" />
     <Compile Include="BPTT\IGridModelSimulator.cs" />
     <Compile Include="BPTT\IModelSimulator.cs" />
     <Compile Include="BPTT\MathModelSimulator.cs" />

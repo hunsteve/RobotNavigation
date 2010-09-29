@@ -16,8 +16,9 @@ namespace OnlabNeuralis
         public const double OR_LENGTH_ACC = 0.0001;
 
 
-        private double targetDist;
-        private PointD targetOrientation;//origo koruli egysegvektor
+        private double targetDist;//robot-cel tavolsag
+        private PointD targetOrientation;//origo koruli egysegvektor, robothoz kepest milyen iranyba van a cel
+        private PointD targetFinishOrientation;//origo koruli egysegvektor, robothoz kepest hogy all a cel
 
         public static explicit operator double[](GridCarModelState cs)
         {
@@ -28,25 +29,31 @@ namespace OnlabNeuralis
         {
             this.targetDist = 0;
             this.targetOrientation = new PointD(1, 0);
+            this.targetFinishOrientation = new PointD(1, 0);
 
             this.TargetDist = arg[0];
             this.TargetOrientation = new PointD(arg[1], arg[2]);
+            this.TargetFinishOrientation = new PointD(arg[3], arg[4]);
         }
 
-        public GridCarModelState(double dist, double angle)
+        public GridCarModelState(double dist, double angle, double finishAngle)
         {
             this.targetDist = dist;
             this.targetOrientation = new PointD(1, 0);
+            this.targetFinishOrientation = new PointD(1, 0);
       
             this.TargetAngle = angle;
+            this.TargetFinishAngle = finishAngle;
         }
 
-        public GridCarModelState(double dist, PointD angle)
+        public GridCarModelState(double dist, PointD angle, PointD finishAngle)
         {
             this.targetDist = dist;
             this.targetOrientation = new PointD(1, 0);
+            this.targetFinishOrientation = new PointD(1, 0);
             
             this.TargetOrientation = angle;
+            this.TargetFinishOrientation = finishAngle;
         }
 
         public double TargetDist
@@ -100,6 +107,30 @@ namespace OnlabNeuralis
             set
             {
                 targetOrientation = new PointD(Math.Cos(value), Math.Sin(value));
+            }
+        }
+
+        public PointD TargetFinishOrientation
+        {
+            get
+            {
+                return targetFinishOrientation;
+            }
+            set
+            {
+                this.TargetFinishAngle = Math.Atan2(value.Y, value.X);
+            }
+        }
+
+        public double TargetFinishAngle
+        {
+            get
+            {
+                return Math.Atan2(targetFinishOrientation.Y, targetFinishOrientation.X);
+            }
+            set
+            {
+                targetFinishOrientation = new PointD(Math.Cos(value), Math.Sin(value));
             }
         }
 
