@@ -50,8 +50,8 @@ namespace NavigationSimulator
             model = new CarModel(new CarModelState(new PointD(ComMath.Normal(0.3, 0, 1, CarModelState.MIN_POS_X, CarModelState.MAX_POS_X),
                                                              ComMath.Normal(0.3, 0, 1, CarModelState.MIN_POS_Y, CarModelState.MAX_POS_Y)),
                                                   new PointD(0, 1)));
-            finish = new FinishModel(new PointD(ComMath.Normal(0.7, 0, 1, CarModelState.MIN_POS_X, CarModelState.MAX_POS_X),
-                                                ComMath.Normal(0.7, 0, 1, CarModelState.MIN_POS_Y, CarModelState.MAX_POS_Y)),
+            finish = new FinishModel(new PointD(ComMath.Normal(0.5, 0, 1, CarModelState.MIN_POS_X, CarModelState.MAX_POS_X),
+                                                ComMath.Normal(0.5, 0, 1, CarModelState.MIN_POS_Y, CarModelState.MAX_POS_Y)),
                                      0.5 * Math.PI);
             obstacles = new List<ObstacleModel>();
             dragables = new List<IDragable>();

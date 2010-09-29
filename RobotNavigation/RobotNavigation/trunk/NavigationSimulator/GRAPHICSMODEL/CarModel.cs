@@ -8,7 +8,7 @@ namespace OnlabNeuralis
     public class CarModel : IDragable
     {
         public const double SHAFT_LENGTH = 110;  // tengelyhossz, mm
-        public const double SIMULATION_TIME_STEP = 1;  // szimulacios lepeskoz: sec
+        public const double SIMULATION_TIME_STEP = 0.5;  // szimulacios lepeskoz: sec
         public const double MM_PER_PIXEL = 4;
         public const double OFFSET_X = -CarModelState.MIN_POS_X / MM_PER_PIXEL;
         public const double OFFSET_Y = -CarModelState.MIN_POS_Y / MM_PER_PIXEL;

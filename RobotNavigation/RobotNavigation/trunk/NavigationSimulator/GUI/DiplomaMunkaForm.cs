@@ -14,7 +14,8 @@ namespace OnlabNeuralis
     
     public partial class NavigationSimulatorForm : Form
     {              
-        public NeuralController neuralController;
+        //public NeuralController neuralController;
+        public GridNeuralController neuralController;
         private CarModelInput outInput;
         private CarModelState outState;
         private long timerDiv;
@@ -92,7 +93,7 @@ namespace OnlabNeuralis
                     else
                     {
                         carModelGraphicControl1.SetReceiveCommand();
-                        neuralController.SimulateOneStep(carPos.GetCarState(), out outInput, out outState);
+                        //neuralController.SimulateOneStep(carPos.GetCarState(), out outInput, out outState);
                         if (checkBoxSerial.Checked)
                         {
                             byte leftspd = (byte)Convert.ToSByte(ComMath.Normal(outInput.LeftSpeed, -180, 180, -128, 127));
@@ -140,9 +141,12 @@ namespace OnlabNeuralis
                 {
                     if (neuralController.trainInnerStates != null)
                     {
-                        foreach (CarModelState s in neuralController.trainInnerStates)
+                        foreach (GridCarModelState s in neuralController.trainInnerStates)
                         {
-                            carModelGraphicControl1.trainingModels.Add(new CarModel(s));
+                            CarModelState cms = new CarModelState();
+                            cms.Position = new PointD(Math.Cos(s.TargetAngle - s.TargetFinishAngle) * s.TargetDist, Math.Sin(s.TargetAngle - s.TargetFinishAngle) * s.TargetDist);
+                            cms.Angle = s.TargetFinishAngle;
+                            carModelGraphicControl1.trainingModels.Add(new CarModel(cms));
                         }
                     }
                 }
@@ -203,11 +207,11 @@ namespace OnlabNeuralis
         {
             if (simulation)
             {
-                neuralController = new NeuralController(new MathModelSimulator(), itemManager, itemManager, itemManager);
+                neuralController = new GridNeuralController(new GridMathModelSimulator(), itemManager, itemManager, itemManager);
             }
             else 
             {
-                neuralController = new NeuralController(new MathModelSimulator(), cameraCarPosition, cameraCarPosition, cameraCarPosition);
+                neuralController = new GridNeuralController(new GridMathModelSimulator(), cameraCarPosition, cameraCarPosition, cameraCarPosition);
             }
             checkBoxShowNNOutput_CheckedChanged(null, null);
             checkBoxShowCamImage_CheckedChanged(null, null);
@@ -305,8 +309,9 @@ namespace OnlabNeuralis
 
         private void checkBoxShowNNOutput_CheckedChanged(object sender, EventArgs e)
         {
-            if (checkBoxShowNNOutput.Checked) carModelGraphicControl1.neuralController = neuralController;
-            else carModelGraphicControl1.neuralController = null;
+            //if (checkBoxShowNNOutput.Checked) carModelGraphicControl1.neuralController = neuralController;
+            //else 
+                carModelGraphicControl1.neuralController = null;
             carModelGraphicControl1.Invalidate();
         }
 
