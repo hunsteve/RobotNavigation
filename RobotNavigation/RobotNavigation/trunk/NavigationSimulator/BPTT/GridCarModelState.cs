@@ -25,6 +25,23 @@ namespace OnlabNeuralis
             return new double[] { cs.targetDist, cs.targetOrientation.X, cs.targetOrientation.Y };
         }
 
+        public static CarModelState ToCarModelState(GridCarModelState s)
+        {
+            CarModelState cms = new CarModelState();
+            cms.Position = new PointD(Math.Cos(s.TargetAngle - s.TargetFinishAngle) * s.TargetDist, Math.Sin(s.TargetAngle - s.TargetFinishAngle) * s.TargetDist);
+            cms.Angle = Math.PI - s.TargetFinishAngle;
+            return cms;
+        }
+
+        public static GridCarModelState FromCarModelState(CarModelState s)
+        {
+            GridCarModelState gcms = new GridCarModelState();
+            gcms.TargetFinishAngle = Math.PI-s.Angle;
+            gcms.TargetAngle = Math.Atan2(s.Position.Y, s.Position.X) + gcms.TargetFinishAngle;
+            gcms.TargetDist = Math.Sqrt(s.Position.Y * s.Position.Y + s.Position.X * s.Position.X);            
+            return gcms;
+        }
+
         public GridCarModelState(double[] arg)
         {
             this.targetDist = 0;

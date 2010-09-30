@@ -31,7 +31,7 @@ namespace OnlabNeuralis
 
             state2.TargetDist = Math.Sqrt(state.TargetDist * state.TargetDist + vectLength * vectLength - 2 * state.TargetDist * vectLength * Math.Cos(state.TargetAngle - dAngle / 2));
 
-            state2.TargetAngle = state.TargetAngle - dAngle + Math.Acos((state.TargetDist * state.TargetDist + state2.TargetDist * state2.TargetDist - vectLength * vectLength) / (2 * state.TargetDist * state2.TargetDist));
+            state2.TargetAngle = state.TargetAngle - dAngle + Math.Sign(state.TargetAngle - dAngle / 2) * Math.Acos((state.TargetDist * state.TargetDist + state2.TargetDist * state2.TargetDist - vectLength * vectLength) / (2 * state.TargetDist * state2.TargetDist));
 
             state2.TargetFinishAngle -= dAngle;
 

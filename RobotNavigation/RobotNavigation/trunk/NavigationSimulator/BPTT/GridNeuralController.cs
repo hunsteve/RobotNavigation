@@ -194,9 +194,11 @@ namespace OnlabNeuralis
                 //minden pont celtol vett tavolsaga
                 double[] desiredOutput = (double[])finishStateProvider.GetFinishState(simCount);
                 double disterror = ComMath.Normal(state.TargetDist, GridCarModelState.MIN_DIST, GridCarModelState.MAX_DIST, 0, 1);
+                double orientationerror = disterror * disterror;
+                if (orientationerror < 0.2) orientationerror = 0;
                 singleErrors.Add(new double[] { -disterror * MAX_NEURON_VALUE ,                                                                                                 
-                                                disterror*disterror*ComMath.Normal(1 - state.TargetOrientation.X,GridCarModelState.MIN_OR_XY, GridCarModelState.MAX_OR_XY, MIN_NEURON_VALUE, MAX_NEURON_VALUE), 
-                                                disterror*disterror*ComMath.Normal(0 - state.TargetOrientation.Y,GridCarModelState.MIN_OR_XY, GridCarModelState.MAX_OR_XY, MIN_NEURON_VALUE, MAX_NEURON_VALUE),
+                                                orientationerror*ComMath.Normal(1 - state.TargetOrientation.X,GridCarModelState.MIN_OR_XY, GridCarModelState.MAX_OR_XY, MIN_NEURON_VALUE, MAX_NEURON_VALUE), 
+                                                orientationerror*ComMath.Normal(0 - state.TargetOrientation.Y,GridCarModelState.MIN_OR_XY, GridCarModelState.MAX_OR_XY, MIN_NEURON_VALUE, MAX_NEURON_VALUE),
                                                 (1-disterror)*(1-disterror)*ComMath.Normal(0 - state.TargetFinishOrientation.X,GridCarModelState.MIN_OR_XY, GridCarModelState.MAX_OR_XY, MIN_NEURON_VALUE, MAX_NEURON_VALUE), 
                                                 (1-disterror)*(1-disterror)*ComMath.Normal(1 - state.TargetFinishOrientation.Y,GridCarModelState.MIN_OR_XY, GridCarModelState.MAX_OR_XY, MIN_NEURON_VALUE, MAX_NEURON_VALUE) }
                                 );
@@ -265,8 +267,8 @@ namespace OnlabNeuralis
                 errors[0] = (sensitibility[0] + sensitibility2[0]);
                 errors[1] = (sensitibility[1] + sensitibility2[1] + singleErrors[i][1]);
                 errors[2] = (sensitibility[2] + sensitibility2[2] + singleErrors[i][2]);
-                errors[3] = (sensitibility[3] + sensitibility2[3] + singleErrors[i][3]);
-                errors[4] = (sensitibility[4] + sensitibility2[4] + singleErrors[i][4]);
+                errors[3] = (sensitibility[3] + sensitibility2[3] + 0*singleErrors[i][3]);
+                errors[4] = (sensitibility[4] + sensitibility2[4] + 0*singleErrors[i][4]);
 
                 //regularizaciobol szarmazo hiba hozzaadasa                    
                 //errors[0] += regularizationErrors[i][0];

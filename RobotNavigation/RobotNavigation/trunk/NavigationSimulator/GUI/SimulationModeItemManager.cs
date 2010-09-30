@@ -104,6 +104,13 @@ namespace NavigationSimulator
             running = false;
         }
 
+        public void SimualteGrid(IGridModelSimulator sim, GridCarModelInput input, double timestep)
+        {
+            GridCarModelState gcms;
+            sim.SimulateModel(GridCarModelState.FromCarModelState(model.state), input, timestep, out gcms);
+            model.state = GridCarModelState.ToCarModelState(gcms);
+        }
+
         public void Simulate(IModelSimulator modelsim, CarModelInput input, double timestep)
         {
             model.SimulateModel(input, modelsim, timestep);

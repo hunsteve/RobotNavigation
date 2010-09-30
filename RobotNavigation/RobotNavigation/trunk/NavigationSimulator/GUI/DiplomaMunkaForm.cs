@@ -94,6 +94,7 @@ namespace OnlabNeuralis
                     {
                         carModelGraphicControl1.SetReceiveCommand();
                         //neuralController.SimulateOneStep(carPos.GetCarState(), out outInput, out outState);
+                        outInput = new CarModelInput(20, 100);
                         if (checkBoxSerial.Checked)
                         {
                             byte leftspd = (byte)Convert.ToSByte(ComMath.Normal(outInput.LeftSpeed, -180, 180, -128, 127));
@@ -107,7 +108,8 @@ namespace OnlabNeuralis
                 timerDiv = (timerDiv + 1) % (long)(CarModel.SIMULATION_TIME_STEP * 1000.0 / timer1.Interval);
                 if (simulation)
                 {
-                    itemManager.Simulate(new MathModelSimulator(), outInput, timer1.Interval / 1000.0);
+                    //itemManager.Simulate(new MathModelSimulator(), outInput, timer1.Interval / 1000.0);
+                    itemManager.SimualteGrid(new GridMathModelSimulator(), new GridCarModelInput(outInput.LeftSpeed, outInput.RightSpeed), timer1.Interval / 1000.0);
                 }
                 else
                 {
@@ -142,11 +144,8 @@ namespace OnlabNeuralis
                     if (neuralController.trainInnerStates != null)
                     {
                         foreach (GridCarModelState s in neuralController.trainInnerStates)
-                        {
-                            CarModelState cms = new CarModelState();
-                            cms.Position = new PointD(Math.Cos(s.TargetAngle - s.TargetFinishAngle) * s.TargetDist, Math.Sin(s.TargetAngle - s.TargetFinishAngle) * s.TargetDist);
-                            cms.Angle = s.TargetFinishAngle;
-                            carModelGraphicControl1.trainingModels.Add(new CarModel(cms));
+                        {                            
+                            carModelGraphicControl1.trainingModels.Add(new CarModel(GridCarModelState.ToCarModelState(s)));
                         }
                     }
                 }
