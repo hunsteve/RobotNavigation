@@ -194,13 +194,16 @@ namespace OnlabNeuralis
                 //minden pont celtol vett tavolsaga
                 double[] desiredOutput = (double[])finishStateProvider.GetFinishState(simCount);
                 double disterror = ComMath.Normal(state.TargetDist, GridCarModelState.MIN_DIST, GridCarModelState.MAX_DIST, 0, 1);
-                double orientationerror = disterror * disterror;
+                double orientationerror = disterror;
                 if (orientationerror < 0.2) orientationerror = 0;
+                double finishorientationerror = disterror;
+                if (finishorientationerror > 0.1) finishorientationerror = 0;
+                else finishorientationerror = 1;
                 singleErrors.Add(new double[] { -disterror * MAX_NEURON_VALUE ,                                                                                                 
                                                 orientationerror*ComMath.Normal(1 - state.TargetOrientation.X,GridCarModelState.MIN_OR_XY, GridCarModelState.MAX_OR_XY, MIN_NEURON_VALUE, MAX_NEURON_VALUE), 
                                                 orientationerror*ComMath.Normal(0 - state.TargetOrientation.Y,GridCarModelState.MIN_OR_XY, GridCarModelState.MAX_OR_XY, MIN_NEURON_VALUE, MAX_NEURON_VALUE),
-                                                (1-disterror)*(1-disterror)*ComMath.Normal(0 - state.TargetFinishOrientation.X,GridCarModelState.MIN_OR_XY, GridCarModelState.MAX_OR_XY, MIN_NEURON_VALUE, MAX_NEURON_VALUE), 
-                                                (1-disterror)*(1-disterror)*ComMath.Normal(1 - state.TargetFinishOrientation.Y,GridCarModelState.MIN_OR_XY, GridCarModelState.MAX_OR_XY, MIN_NEURON_VALUE, MAX_NEURON_VALUE) }
+                                                finishorientationerror*ComMath.Normal(1 - state.TargetFinishOrientation.X,GridCarModelState.MIN_OR_XY, GridCarModelState.MAX_OR_XY, MIN_NEURON_VALUE, MAX_NEURON_VALUE), 
+                                                finishorientationerror*ComMath.Normal(0 - state.TargetFinishOrientation.Y,GridCarModelState.MIN_OR_XY, GridCarModelState.MAX_OR_XY, MIN_NEURON_VALUE, MAX_NEURON_VALUE) }
                                 );
 
                 ++simCount;
