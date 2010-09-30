@@ -63,13 +63,14 @@ namespace OnlabNeuralis
             double ksi = 0.0001;
             double errX = 0;
             double errY = 0;
+
+            CarModelState cms = GridCarModelState.ToCarModelState(state);
+            double x = ComMath.Normal(cms.Position.X, CarModelState.MIN_POS_X, CarModelState.MAX_POS_X, MIN_NEURON_VALUE, MAX_NEURON_VALUE);
+            double y = ComMath.Normal(cms.Position.Y, CarModelState.MIN_POS_X, CarModelState.MAX_POS_X, MIN_NEURON_VALUE, MAX_NEURON_VALUE);
+
             List<ObstacleState> obstacles = obstacleProvider.GetObstacleStates(time);
             foreach (ObstacleState obst in obstacles)//cel az origo, tehat az origohoz relativak az akadalyok, origo felfele nez
-            {
-                double d = ComMath.Normal(state.TargetDist, GridCarModelState.MIN_DIST, GridCarModelState.MAX_DIST, MIN_NEURON_VALUE, MAX_NEURON_VALUE);
-                double x = Math.Cos(state.TargetAngle - state.TargetFinishAngle) * d;
-                double y = Math.Sin(state.TargetAngle - state.TargetFinishAngle) * d;
-
+            {                
                 double x0 = ComMath.Normal(obst.pp.position.X, CarModelState.MIN_POS_X, CarModelState.MAX_POS_X, MIN_NEURON_VALUE, MAX_NEURON_VALUE);
                 double y0 = ComMath.Normal(obst.pp.position.Y, CarModelState.MIN_POS_X, CarModelState.MAX_POS_X, MIN_NEURON_VALUE, MAX_NEURON_VALUE);
 
@@ -87,7 +88,12 @@ namespace OnlabNeuralis
                 errX /= obstacles.Count;
                 errY /= obstacles.Count;
             }
-            return new double[] { ksi * errX, ksi * errY, 0, 0 };
+
+            CarModelState cms2 = new CarModelState(cms.Position,cms.Angle);
+            cms2.Position = new PointD(cms2.Position.X + ksi * errX, cms2.Position.Y + ksi * errY);
+            GridCarModelState gcms = GridCarModelState.FromCarModelState(cms2);
+
+            return new double[] { gcms.TargetDist - state.TargetDist, gcms.TargetOrientation.X - state.TargetOrientation.X, gcms.TargetOrientation.Y - state.TargetOrientation.Y };
         }
 
         private double obstacleFieldError(GridCarModelState state)
@@ -169,7 +175,7 @@ namespace OnlabNeuralis
             MLPDll[] controllers = new MLPDll[maxSimCount];
             IGridModelSimulator[] models = new IGridModelSimulator[maxSimCount];
 
-            GridCarModelState state = new GridCarModelState(1000,new PointD(-1,-1),new PointD(1,0));//carStateProvider.GetCarState();
+            GridCarModelState state = GridCarModelState.FromCarModelState(carStateProvider.GetCarState());//new GridCarModelState(1000,new PointD(-1,-1),new PointD(1,0));
             GridCarModelInput input = new GridCarModelInput();
 
 
@@ -197,7 +203,7 @@ namespace OnlabNeuralis
                 double orientationerror = disterror;
                 if (orientationerror < 0.2) orientationerror = 0;
                 double finishorientationerror = disterror;
-                if (finishorientationerror > 0.1) finishorientationerror = 0;
+                if (finishorientationerror > 0.03) finishorientationerror = 0;
                 else finishorientationerror = 1;
                 singleErrors.Add(new double[] { -disterror * MAX_NEURON_VALUE ,                                                                                                 
                                                 orientationerror*ComMath.Normal(1 - state.TargetOrientation.X,GridCarModelState.MIN_OR_XY, GridCarModelState.MAX_OR_XY, MIN_NEURON_VALUE, MAX_NEURON_VALUE), 
@@ -216,7 +222,7 @@ namespace OnlabNeuralis
                     double[] err3 = singleErrors[simCount - 3];
                     double error1, error2, error3;
                     error1 = error2 = error3 = 0;
-                    for (int i = 0; i < err1.Length; i++)
+                    for (int i = 0; i < 1; i++)//err1.Length
                     {
                         error1 += err1[i] * err1[i];
                         error2 += err2[i] * err2[i];
@@ -274,8 +280,9 @@ namespace OnlabNeuralis
                 errors[4] = (sensitibility[4] + sensitibility2[4] + 0*singleErrors[i][4]);
 
                 //regularizaciobol szarmazo hiba hozzaadasa                    
-                //errors[0] += regularizationErrors[i][0];
-                //errors[1] += regularizationErrors[i][1];
+                errors[0] += regularizationErrors[i][0];
+                errors[1] += regularizationErrors[i][1];
+                errors[1] += regularizationErrors[i][2];
 
 
 
