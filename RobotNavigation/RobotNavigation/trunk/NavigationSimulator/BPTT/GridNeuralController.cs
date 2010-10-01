@@ -60,7 +60,7 @@ namespace OnlabNeuralis
             //C = sum((1/d(X) - 1/d(0))^2)
             //dC/dy_x =...
             //dC/dy_y =...
-            double ksi = 0.0001;
+            double ksi = 10;
             double disterr = 0;
             double orxerr = 0;
             double oryerr = 0;
@@ -74,7 +74,7 @@ namespace OnlabNeuralis
 
                 double a = ComMath.Normal(state.TargetDist , GridCarModelState.MIN_DIST, GridCarModelState.MAX_DIST, 0, MAX_NEURON_VALUE);
 
-                double ang = Math.PI - Math.Atan2(obst.pp.position.Y, obst.pp.position.X) + state.TargetAngle - state.TargetFinishAngle;
+                double ang = Math.PI - Math.Atan2(-obst.pp.position.Y, -obst.pp.position.X) + state.TargetAngle - state.TargetFinishAngle;
                 if (ang > Math.PI) ang -= 2 * Math.PI;
                 if (ang < -Math.PI) ang += 2 * Math.PI;
 
@@ -87,7 +87,7 @@ namespace OnlabNeuralis
                 double r = ComMath.Normal(obst.radius + CarModel.SHAFT_LENGTH / 2, GridCarModelState.MIN_DIST, GridCarModelState.MAX_DIST, 0, MAX_NEURON_VALUE);
                 double dist = obstdist - r;
                 if (dist <= 0.0001) dist = 0.0001;
-                double err = (1 / 2 * (dist * dist * dist));
+                double err = 1 / (2 * (dist * dist * dist));
 
 
                 disterr += -(AA + 2 * a) * err;
@@ -102,9 +102,9 @@ namespace OnlabNeuralis
                 disterr /= obstacles.Count;
                 orxerr /= obstacles.Count;
                 oryerr /= obstacles.Count;
-            }            
+            }
 
-            return new double[] { disterr, orxerr, oryerr };
+            return new double[] { ksi * disterr, ksi * orxerr, ksi * oryerr };
         }
 
         private double obstacleFieldError(GridCarModelState state)
