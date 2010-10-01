@@ -61,39 +61,50 @@ namespace OnlabNeuralis
             //dC/dy_x =...
             //dC/dy_y =...
             double ksi = 0.0001;
-            double errX = 0;
-            double errY = 0;
-
-            CarModelState cms = GridCarModelState.ToCarModelState(state);
-            double x = ComMath.Normal(cms.Position.X, CarModelState.MIN_POS_X, CarModelState.MAX_POS_X, MIN_NEURON_VALUE, MAX_NEURON_VALUE);
-            double y = ComMath.Normal(cms.Position.Y, CarModelState.MIN_POS_X, CarModelState.MAX_POS_X, MIN_NEURON_VALUE, MAX_NEURON_VALUE);
+            double disterr = 0;
+            double orxerr = 0;
+            double oryerr = 0;
 
             List<ObstacleState> obstacles = obstacleProvider.GetObstacleStates(time);
             foreach (ObstacleState obst in obstacles)//cel az origo, tehat az origohoz relativak az akadalyok, origo felfele nez
-            {                
-                double x0 = ComMath.Normal(obst.pp.position.X, CarModelState.MIN_POS_X, CarModelState.MAX_POS_X, MIN_NEURON_VALUE, MAX_NEURON_VALUE);
-                double y0 = ComMath.Normal(obst.pp.position.Y, CarModelState.MIN_POS_X, CarModelState.MAX_POS_X, MIN_NEURON_VALUE, MAX_NEURON_VALUE);
+            {
 
 
-                double r = ComMath.Normal(obst.radius + CarModel.SHAFT_LENGTH / 2, CarModelState.MIN_POS_Y, CarModelState.MAX_POS_Y, MIN_NEURON_VALUE, MAX_NEURON_VALUE);
+                double d = ComMath.Normal(Math.Sqrt(obst.pp.position.X * obst.pp.position.X + obst.pp.position.Y * obst.pp.position.Y), GridCarModelState.MIN_DIST, GridCarModelState.MAX_DIST, 0, MAX_NEURON_VALUE);
 
-                double dist = Math.Sqrt((x - x0) * (x - x0) + (y - y0) * (y - y0)) - r;
+                double a = ComMath.Normal(state.TargetDist , GridCarModelState.MIN_DIST, GridCarModelState.MAX_DIST, 0, MAX_NEURON_VALUE);
+
+                double ang = Math.PI - Math.Atan2(obst.pp.position.Y, obst.pp.position.X) + state.TargetAngle - state.TargetFinishAngle;
+                if (ang > Math.PI) ang -= 2 * Math.PI;
+                if (ang < -Math.PI) ang += 2 * Math.PI;
+
+                double AA = -2 * d * Math.Cos(ang);
+                double BB = d * d;
+                double obstdist = Math.Sqrt(a * a + BB + AA * a);
+                double obstang = state.TargetAngle + Math.Sign(ang) * Math.Acos((a * a + obstdist * obstdist - d * d) / (2 * a * obstdist));
+
+                
+                double r = ComMath.Normal(obst.radius + CarModel.SHAFT_LENGTH / 2, GridCarModelState.MIN_DIST, GridCarModelState.MAX_DIST, 0, MAX_NEURON_VALUE);
+                double dist = obstdist - r;
                 if (dist <= 0.0001) dist = 0.0001;
-                double err = (1 / (dist * dist * dist));
-                errX += err * (x - x0);
-                errY += err * (y - y0);
+                double err = (1 / 2 * (dist * dist * dist));
+
+
+                disterr += -(AA + 2 * a) * err;
+                double angerr = (-2 * a * d * Math.Sin(ang)) * err;
+
+                orxerr += -Math.Sin(state.TargetAngle) * angerr;
+                oryerr += Math.Cos(state.TargetAngle) * angerr; 
+
             }
             if (obstacles.Count > 0)
             {
-                errX /= obstacles.Count;
-                errY /= obstacles.Count;
-            }
+                disterr /= obstacles.Count;
+                orxerr /= obstacles.Count;
+                oryerr /= obstacles.Count;
+            }            
 
-            CarModelState cms2 = new CarModelState(cms.Position,cms.Angle);
-            cms2.Position = new PointD(cms2.Position.X + ksi * errX, cms2.Position.Y + ksi * errY);
-            GridCarModelState gcms = GridCarModelState.FromCarModelState(cms2);
-
-            return new double[] { gcms.TargetDist - state.TargetDist, gcms.TargetOrientation.X - state.TargetOrientation.X, gcms.TargetOrientation.Y - state.TargetOrientation.Y };
+            return new double[] { disterr, orxerr, oryerr };
         }
 
         private double obstacleFieldError(GridCarModelState state)
