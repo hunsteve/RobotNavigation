@@ -47,12 +47,12 @@ namespace NavigationSimulator
 
         public SimulationModeItemManager(ContextMenuStrip contextMenuStrip, CarModelGraphicControl graphicControl)
         {
-            model = new CarModel(new CarModelState(new PointD(ComMath.Normal(0.3, 0, 1, CarModelState.MIN_POS_X, CarModelState.MAX_POS_X),
-                                                             ComMath.Normal(0.3, 0, 1, CarModelState.MIN_POS_Y, CarModelState.MAX_POS_Y)),
+            model = new CarModel(new CarModelState(new PointD(ComMath.Normal(0, 0, 1, CarModelState.MIN_POS_X, CarModelState.MAX_POS_X),
+                                                             ComMath.Normal(0, 0, 1, CarModelState.MIN_POS_Y, CarModelState.MAX_POS_Y)),
                                                   new PointD(0, 1)));
             finish = new FinishModel(new PointD(ComMath.Normal(0.5, 0, 1, CarModelState.MIN_POS_X, CarModelState.MAX_POS_X),
                                                 ComMath.Normal(0.5, 0, 1, CarModelState.MIN_POS_Y, CarModelState.MAX_POS_Y)),
-                                     0.5 * Math.PI);
+                                     0);
             obstacles = new List<ObstacleModel>();
             dragables = new List<IDragable>();
 
@@ -306,36 +306,36 @@ namespace NavigationSimulator
 
         public List<ObstacleState> GetObstacleStates(int iteration)
         {
-            if (iteration > 0)
-            {
-                List<ObstacleState> oss = new List<ObstacleState>();
-                lock (obstacles)
-                {
-                    foreach (ObstacleModel om in obstacles)
-                    {
-                        lock (om)
-                        {
-                            List<PointD> p = om.state.pp.PredictNextPositions(iteration);
-                            if (p != null) oss.Add(new ObstacleState(p[iteration - 1], om.state.radius));
-                            else oss.Add(new ObstacleState(om.state.pp.position, om.state.radius));
-                        }
-                    }
-                }
-                return oss;
-            }
-            else
+            //if (iteration > 0)
+            //{
+            //    List<ObstacleState> oss = new List<ObstacleState>();
+            //    lock (obstacles)
+            //    {
+            //        foreach (ObstacleModel om in obstacles)
+            //        {
+            //            lock (om)
+            //            {
+            //                List<PointD> p = om.state.pp.PredictNextPositions(iteration);
+            //                if (p != null) oss.Add(new ObstacleState(p[iteration - 1], om.state.radius));
+            //                else oss.Add(new ObstacleState(om.state.pp.position, om.state.radius));
+            //            }
+            //        }
+            //    }
+            //    return oss;
+            //}
+            //else
             {
                 List<ObstacleState> ret = new List<ObstacleState>();
-                lock (obstacles)
-                {
+                //lock (obstacles)
+                //{
                     foreach (ObstacleModel om in obstacles)
                     {
-                        lock (om)
-                        {
+                        //lock (om)
+                        //{
                             ret.Add(om.state);
-                        }
+                        //}
                     }
-                }
+                //}
                 return ret;
             }   
         }

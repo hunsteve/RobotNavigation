@@ -80,7 +80,7 @@ namespace NavigationSimulator
             else
             {
                 List<PointD> prev = GetPreviousPositions();
-                if ((prev != null) && (list != null)) 
+                if ((prev != null) && (list != null))
                 {
                     PointD last = prev[prev.Count - 1];
                     position.X = last.X * (1 - partialTimeStepInterval) + list[0].X * partialTimeStepInterval;

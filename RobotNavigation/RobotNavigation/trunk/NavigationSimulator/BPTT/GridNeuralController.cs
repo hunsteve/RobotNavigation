@@ -60,12 +60,12 @@ namespace OnlabNeuralis
             //C = sum((1/d(X) - 1/d(0))^2)
             //dC/dy_x =...
             //dC/dy_y =...
-            double ksi = 10;
+            double ksi = 0.1;
             double disterr = 0;
             double orxerr = 0;
             double oryerr = 0;
 
-            List<ObstacleState> obstacles = obstacleProvider.GetObstacleStates(time);
+            List<ObstacleState> obstacles = obstacleProvider.GetObstacleStates(0);
             foreach (ObstacleState obst in obstacles)//cel az origo, tehat az origohoz relativak az akadalyok, origo felfele nez
             {
 
@@ -74,7 +74,7 @@ namespace OnlabNeuralis
 
                 double a = ComMath.Normal(state.TargetDist , GridCarModelState.MIN_DIST, GridCarModelState.MAX_DIST, 0, MAX_NEURON_VALUE);
 
-                double ang = Math.PI - Math.Atan2(-obst.pp.position.Y, -obst.pp.position.X) + state.TargetAngle - state.TargetFinishAngle;
+                double ang = Math.PI - (Math.Atan2(obst.pp.position.Y, obst.pp.position.X) + Math.PI) + state.TargetAngle - state.TargetFinishAngle;
                 if (ang > Math.PI) ang -= 2 * Math.PI;
                 if (ang < -Math.PI) ang += 2 * Math.PI;
 
@@ -104,7 +104,7 @@ namespace OnlabNeuralis
                 oryerr /= obstacles.Count;
             }
 
-            return new double[] { ksi * disterr, ksi * orxerr, ksi * oryerr };
+            return new double[] { -ksi * disterr, -ksi * orxerr, -ksi * oryerr };
         }
 
         private double obstacleFieldError(GridCarModelState state)
@@ -208,19 +208,21 @@ namespace OnlabNeuralis
                 //kozbulso hibak kiszamitasa, itt csak az akadalyoktol valo tavolsag "hibajat" vesszuk figyelembe, irany nem szamit -> hibaja 0                    
                 regularizationErrors.Add(obstacleFieldErrorGradient(state, simCount));
 
-                //minden pont celtol vett tavolsaga
-                double[] desiredOutput = (double[])finishStateProvider.GetFinishState(simCount);
+                //minden pont celtol vett tavolsaga                
                 double disterror = ComMath.Normal(state.TargetDist, GridCarModelState.MIN_DIST, GridCarModelState.MAX_DIST, 0, 1);
                 double orientationerror = disterror;
                 if (orientationerror < 0.2) orientationerror = 0;
                 double finishorientationerror = disterror;
-                if (finishorientationerror > 0.03) finishorientationerror = 0;
+                if (finishorientationerror > 0.05) finishorientationerror = 0;
                 else finishorientationerror = 1;
+                double finishX = Math.Cos(Math.PI - finishStateProvider.GetFinishState(simCount).Angle);
+                double finishY = Math.Sin(Math.PI - finishStateProvider.GetFinishState(simCount).Angle);
+
                 singleErrors.Add(new double[] { -disterror * MAX_NEURON_VALUE ,                                                                                                 
                                                 orientationerror*ComMath.Normal(1 - state.TargetOrientation.X,GridCarModelState.MIN_OR_XY, GridCarModelState.MAX_OR_XY, MIN_NEURON_VALUE, MAX_NEURON_VALUE), 
                                                 orientationerror*ComMath.Normal(0 - state.TargetOrientation.Y,GridCarModelState.MIN_OR_XY, GridCarModelState.MAX_OR_XY, MIN_NEURON_VALUE, MAX_NEURON_VALUE),
-                                                finishorientationerror*ComMath.Normal(1 - state.TargetFinishOrientation.X,GridCarModelState.MIN_OR_XY, GridCarModelState.MAX_OR_XY, MIN_NEURON_VALUE, MAX_NEURON_VALUE), 
-                                                finishorientationerror*ComMath.Normal(0 - state.TargetFinishOrientation.Y,GridCarModelState.MIN_OR_XY, GridCarModelState.MAX_OR_XY, MIN_NEURON_VALUE, MAX_NEURON_VALUE) }
+                                                finishorientationerror*ComMath.Normal(finishX - state.TargetFinishOrientation.X,GridCarModelState.MIN_OR_XY, GridCarModelState.MAX_OR_XY, MIN_NEURON_VALUE, MAX_NEURON_VALUE), 
+                                                finishorientationerror*ComMath.Normal(finishY - state.TargetFinishOrientation.Y,GridCarModelState.MIN_OR_XY, GridCarModelState.MAX_OR_XY, MIN_NEURON_VALUE, MAX_NEURON_VALUE) }
                                 );
 
                 ++simCount;
@@ -285,15 +287,15 @@ namespace OnlabNeuralis
 
 
                 errors[0] = (sensitibility[0] + sensitibility2[0]);
-                errors[1] = (sensitibility[1] + sensitibility2[1] + singleErrors[i][1]);
-                errors[2] = (sensitibility[2] + sensitibility2[2] + singleErrors[i][2]);
-                errors[3] = (sensitibility[3] + sensitibility2[3] + 0*singleErrors[i][3]);
-                errors[4] = (sensitibility[4] + sensitibility2[4] + 0*singleErrors[i][4]);
+                errors[1] = (sensitibility[1] + sensitibility2[1] + 0 * singleErrors[i][1]);
+                errors[2] = (sensitibility[2] + sensitibility2[2] + 0 * singleErrors[i][2]);
+                errors[3] = (sensitibility[3] + sensitibility2[3] + singleErrors[i][3]);
+                errors[4] = (sensitibility[4] + sensitibility2[4] + singleErrors[i][4]);
 
                 //regularizaciobol szarmazo hiba hozzaadasa                    
                 errors[0] += regularizationErrors[i][0];
                 errors[1] += regularizationErrors[i][1];
-                errors[1] += regularizationErrors[i][2];
+                errors[2] += regularizationErrors[i][2];
 
 
 
