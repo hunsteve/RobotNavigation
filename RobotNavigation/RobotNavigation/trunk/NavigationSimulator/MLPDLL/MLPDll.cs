@@ -29,8 +29,12 @@ namespace NeuralNetworkLib
             public Matrix* deltas;
             public Matrix sensibility;
 
+            public Matrix* weakness;
+
             public int* neuronCounts;
             public int layerCount;
+
+            public int isWeakening;
         }
 
         [DllImport("MLPDll.dll")]
@@ -43,7 +47,7 @@ namespace NeuralNetworkLib
         private static extern unsafe void RandomClearWeights(MLP mlp);
 
         [DllImport("MLPDll.dll")]
-        private static extern unsafe MLP createMLP(int inputLength, int* neuronCounts, int layerCount);
+        private static extern unsafe MLP createMLP(int inputLength, int* neuronCounts, int layerCount, bool isWeakening);
 
         [DllImport("MLPDll.dll")]
         private static extern unsafe MLP copyMLP(MLP copy);
@@ -89,8 +93,17 @@ namespace NeuralNetworkLib
 
 
         MLP mlp;
-
         public MLPDll(int[] neuronCount, int inputLength)
+        {
+            init(neuronCount, inputLength, true);
+        }
+
+        public MLPDll(int[] neuronCount, int inputLength, bool isWeakening)
+        {
+            init(neuronCount, inputLength, isWeakening);
+        }
+
+        private void init(int[] neuronCount, int inputLength, bool isWeakening) 
         {
             // Fix the pointer to the array. Assume array is the variable and T is
             // the type of the array.
@@ -100,7 +113,7 @@ namespace NeuralNetworkLib
                 {
                     // pArray now has the pointer to the array. You can get an IntPtr
                     //by casting to void, and passing that in.
-                    mlp = createMLP(inputLength, nc, neuronCount.Length);
+                    mlp = createMLP(inputLength, nc, neuronCount.Length, isWeakening);
                 }
             }
         }

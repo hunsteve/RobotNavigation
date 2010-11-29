@@ -168,7 +168,7 @@ namespace OnlabNeuralis
                 callback();//ertesitsuk a callbacken keresztul a fromot hogy veget ert egy epoch
                 Thread.Sleep(0);
             }
-            trainInnerStates.Clear();
+            //trainInnerStates.Clear();
             callback();
             //controller.SaveNN("neuralcontroller.mlp");
         }
@@ -198,7 +198,8 @@ namespace OnlabNeuralis
             bool earlyStop;
             do
             {
-                controllers[simCount] = new MLPDll(controller);//lemasoljuk
+                if (simCount == 0) controllers[simCount] = new MLPDll(controller);//lemasoljuk
+                else controllers[simCount] = new MLPDll(controllers[simCount - 1]);
                 models[simCount] = model.Clone();//a modellt is
 
                 laststate = state;
@@ -286,7 +287,7 @@ namespace OnlabNeuralis
 
 
 
-                errors[0] = (sensitibility[0] + sensitibility2[0]);
+                errors[0] = (sensitibility[0] + sensitibility2[0] + 0.1 * singleErrors[i][0]);
                 errors[1] = (sensitibility[1] + sensitibility2[1] + 0 * singleErrors[i][1]);
                 errors[2] = (sensitibility[2] + sensitibility2[2] + 0 * singleErrors[i][2]);
                 errors[3] = (sensitibility[3] + sensitibility2[3] + singleErrors[i][3]);

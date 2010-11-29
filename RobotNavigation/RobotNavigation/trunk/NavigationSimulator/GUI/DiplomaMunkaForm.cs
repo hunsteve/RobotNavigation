@@ -93,8 +93,13 @@ namespace OnlabNeuralis
                     else
                     {
                         carModelGraphicControl1.SetReceiveCommand();
-                        //neuralController.SimulateOneStep(carPos.GetCarState(), out outInput, out outState);
-                        outInput = new CarModelInput(20, 100);
+                        GridCarModelInput oi;
+                        GridCarModelState os;
+                        neuralController.SimulateOneStep(GridCarModelState.FromCarModelState(carPos.GetCarState()), out oi, out os);
+                        outState = GridCarModelState.ToCarModelState(os);
+                        outInput = new CarModelInput(oi.Angle);
+                            
+                        //outInput = new CarModelInput(20, 100);
                         if (checkBoxSerial.Checked)
                         {
                             byte leftspd = (byte)Convert.ToSByte(ComMath.Normal(outInput.LeftSpeed, -180, 180, -128, 127));

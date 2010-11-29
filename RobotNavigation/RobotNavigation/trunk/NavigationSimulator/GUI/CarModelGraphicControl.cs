@@ -124,7 +124,7 @@ namespace OnlabNeuralis
                 if (im != null) g.DrawImage(im, new Rectangle(0, 0, w, h), new Rectangle(0, 0, im.Width, im.Height), GraphicsUnit.Pixel);
                 
             }                           
-            g.DrawRectangle(new Pen(Color.Blue, 3), new Rectangle(0, 0, w, h));
+            //g.DrawRectangle(new Pen(Color.Blue, 3), new Rectangle(0, 0, w, h));
             
             
             if (obstacleProvider != null)

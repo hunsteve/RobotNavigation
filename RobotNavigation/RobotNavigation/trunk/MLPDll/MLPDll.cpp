@@ -113,6 +113,20 @@ int multMatrix(Matrix m1, Matrix m2, Matrix dest)
 	return 0;
 }
 
+int elementMult(Matrix m1, Matrix m2, Matrix dest) {
+	if ((m1.width != m2.width) || (m1.height != m2.height) || (dest.width != m2.width) || (dest.height != m2.height) || ((m1.height != 1) && (m1.width != 1))) {
+		return -1;
+	}
+	int l = 0;
+	if (m1.width == 1) l = m1.height;
+	else l = m1.width;
+
+	for (int i=0; i<l; ++i) {
+		dest.data[i] = m1.data[i] * m2.data[i];
+	}
+	return 0;
+}
+
 int copyMatrix(Matrix input, Matrix dest) 
 {
 	if ((input.width > dest.width) || (input.height > dest.height)) {
@@ -174,18 +188,32 @@ void RandomClearWeights(MLP mlp)
 	}
 }
 
+void ClearWeakness(MLP mlp) 
+{
+	if (mlp.isWeakening) {
+		for (int l = 0; l < mlp.layerCount; ++l) //layers
+		{
+			for(int n=0; n<mlp.weakness[l].height; ++n) {
+				mlp.weakness[l].data[n] = 1;
+			}
+		}
+	}
+}
 
 
-MLP createMLP(int inputLength ,int* neuronCounts, int layerCount)
+MLP createMLP(int inputLength ,int* neuronCounts, int layerCount, bool isWeakening)
 {
 	MLP mlp;
 	mlp.layerCount = layerCount;
 	mlp.neuronCounts = new int[layerCount];
-
+	mlp.isWeakening = isWeakening;
 	mlp.weights = new Matrix[layerCount];
 	mlp.deltaWeights = new Matrix[layerCount];
 	mlp.sums = new Matrix[layerCount];
 	mlp.ends = new Matrix[layerCount + 1];
+	if (mlp.isWeakening) {
+		mlp.weakness = new Matrix[layerCount];
+	}
 	mlp.ends[0] = createMatrix(1, inputLength + 1);
 	mlp.ends[0].data[inputLength] = 1; //bias
 	mlp.deltas = new Matrix[layerCount];
@@ -197,6 +225,9 @@ MLP createMLP(int inputLength ,int* neuronCounts, int layerCount)
 		mlp.weights[i] = createMatrix(tmp + 1, neuronCounts[i]);
 		mlp.deltaWeights[i] = createMatrix(tmp + 1, neuronCounts[i]);
 		mlp.sums[i] = createMatrix(1, neuronCounts[i]);
+		if (mlp.isWeakening) {
+			mlp.weakness[i] = createMatrix(1, neuronCounts[i]);
+		}
 		mlp.ends[i+1] = createMatrix(1, neuronCounts[i] + 1);
 		mlp.ends[i+1].data[neuronCounts[i]] = 1; //bias
 		mlp.deltas[i] = createMatrix(1, neuronCounts[i] + 1);
@@ -204,14 +235,20 @@ MLP createMLP(int inputLength ,int* neuronCounts, int layerCount)
 		mlp.neuronCounts[i] = tmp = neuronCounts[i];
 	}
 	RandomClearWeights(mlp);
+	if (mlp.isWeakening) {
+		ClearWeakness(mlp);
+	}
 	return mlp;
 }
 
 MLP copyMLP(MLP copy) {
-	MLP ret = createMLP(copy.ends[0].height-1, copy.neuronCounts, copy.layerCount);	
+	MLP ret = createMLP(copy.ends[0].height-1, copy.neuronCounts, copy.layerCount, copy.isWeakening);	
 	for (int i = 0; i < ret.layerCount; ++i)//layers
 	{
 		copyMatrix(copy.weights[i], ret.weights[i]);
+		if (copy.isWeakening) {
+			copyMatrix(copy.weakness[i], ret.weakness[i]);
+		}
 	}
 	return ret;
 }
@@ -225,6 +262,9 @@ void deleteMLP(MLP mlp)
 		deleteMatrix(mlp.sums[i]); 
 		deleteMatrix(mlp.ends[i+1]); 
 		deleteMatrix(mlp.deltas[i]); 
+		if (mlp.isWeakening) {
+			deleteMatrix(mlp.weakness[i]);
+		}
 	}
 
 	deleteMatrix(mlp.ends[0]);
@@ -233,6 +273,9 @@ void deleteMLP(MLP mlp)
 	delete[] mlp.sums;
 	delete[] mlp.ends;
 	delete[] mlp.deltas;
+	if (mlp.isWeakening) {
+		delete[] mlp.weakness;
+	}
 	deleteMatrix(mlp.sensibility);
 }
 
@@ -248,6 +291,20 @@ int Sigmoid(Matrix input, Matrix dest)
 	return 0;
 }
 
+int StepWeakness(Matrix wo, Matrix weakness) {
+	float a = 0.2f;
+	float b = 1;
+	for(int i=0; i<weakness.height; ++i) {		
+		if (weakness.data[i] < 1) weakness.data[i] += a;
+		weakness.data[i] += - (wo.data[i] * wo.data[i]) * b;		
+		if (weakness.data[i] < 0) weakness.data[i] = 0;
+		if (weakness.data[i] > 1) weakness.data[i] = 1;		
+	}
+	return 0;
+}
+
+
+
 void SetInput(MLP mlp, Matrix input)
 {
 	copyMatrix(input, mlp.ends[0]);
@@ -259,6 +316,12 @@ void ForwardPorpagate(MLP mlp)
 	{
 		multMatrix(mlp.weights[l], mlp.ends[l], mlp.sums[l]);
 		Sigmoid(mlp.sums[l], mlp.ends[l + 1]);
+		if (mlp.isWeakening) {
+			mlp.ends[l + 1].height--;//bias miatt
+			elementMult(mlp.ends[l + 1], mlp.weakness[l], mlp.ends[l + 1]);			
+			StepWeakness(mlp.ends[l + 1], mlp.weakness[l]);
+			mlp.ends[l + 1].height++;//bias miatt
+		}		
 	}
 }
 
@@ -286,9 +349,12 @@ void Backpropagate(MLP mlp)
 		transposeMatrix(&mlp.deltas[l]);
 		mlp.deltas[l+1].height++;//bias miatt
 		for (int i = 0; i < mlp.deltas[l].height - 1; ++i)//inputs, bias nem kell, az linearis
-		{
+		{				
 			float t = tanh(mlp.sums[l].data[i]);
 			mlp.deltas[l].data[i] *= (float)(1 - t * t);
+			if (mlp.isWeakening) {
+				 mlp.deltas[l].data[i] *= mlp.weakness[l].data[i];
+			}
 		}
 		mlp.deltas[l].data[mlp.deltas[l].height - 1] = 0;
 	}

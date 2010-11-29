@@ -27,15 +27,19 @@ struct MLP {
     Matrix* ends;
     Matrix* deltas;
 	Matrix sensibility;
+
+	Matrix* weakness;
     
     int* neuronCounts;
 	int layerCount;
+
+	bool isWeakening;
 };
 
 DLLEXPORT Matrix createMatrix(int width, int height);
 DLLEXPORT void deleteMatrix(Matrix m);
 DLLEXPORT void RandomClearWeights(MLP mlp);
-DLLEXPORT MLP createMLP(int inputLength ,int* neuronCounts, int layerCount);
+DLLEXPORT MLP createMLP(int inputLength ,int* neuronCounts, int layerCount, bool isWeakening);
 DLLEXPORT MLP copyMLP(MLP copy);
 DLLEXPORT void deleteMLP(MLP mlp);
 DLLEXPORT int Sigmoid(Matrix input, Matrix dest);
