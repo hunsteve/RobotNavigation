@@ -153,6 +153,14 @@ namespace OnlabNeuralis
                             carModelGraphicControl1.trainingModels.Add(new CarModel(GridCarModelState.ToCarModelState(s)));
                         }
                     }
+
+                    if (neuralController.trainInnerStatesOrig != null)
+                    {
+                        foreach (GridCarModelState s in neuralController.trainInnerStatesOrig)
+                        {
+                            carModelGraphicControl1.trainingModels.Add(new CarModel(GridCarModelState.ToCarModelState(s), Color.Brown));
+                        }
+                    }
                 }
             }
         }

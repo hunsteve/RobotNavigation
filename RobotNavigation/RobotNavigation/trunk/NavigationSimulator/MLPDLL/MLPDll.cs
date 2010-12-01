@@ -53,6 +53,9 @@ namespace NeuralNetworkLib
         private static extern unsafe MLP copyMLP(MLP copy);
 
         [DllImport("MLPDll.dll")]
+        private static extern unsafe MLP copyMLPandChangeWeakening(MLP copy, bool isWeakening);
+
+        [DllImport("MLPDll.dll")]
         private static extern unsafe void deleteMLP(MLP mlp);
 
         [DllImport("MLPDll.dll")]
@@ -91,11 +94,14 @@ namespace NeuralNetworkLib
         [DllImport("MLPDll.dll")]
         private static extern unsafe float MaxDeltaWeight(MLP mlp);
 
+        [DllImport("MLPDll.dll")]
+        private static extern unsafe void RandomClearWeakness(MLP mlp, float min, float max);
+
 
         MLP mlp;
         public MLPDll(int[] neuronCount, int inputLength)
         {
-            init(neuronCount, inputLength, true);
+            init(neuronCount, inputLength, false);
         }
 
         public MLPDll(int[] neuronCount, int inputLength, bool isWeakening)
@@ -121,6 +127,11 @@ namespace NeuralNetworkLib
         public MLPDll(MLPDll copy)
         {
             mlp = copyMLP(copy.mlp);
+        }
+
+        public MLPDll(MLPDll copy, bool isWeakening)
+        {
+            mlp = copyMLPandChangeWeakening(copy.mlp, isWeakening);            
         }
 
         ~MLPDll()
@@ -279,6 +290,11 @@ namespace NeuralNetworkLib
         public float MaxDeltaWeight()
         {
             return MaxDeltaWeight(mlp);
+        }
+
+        public void RandomClearWeakness(float min, float max)
+        {
+            RandomClearWeakness(this.mlp, min, max);
         }
 
         public Bitmap Visualize(int width, int height, RectangleF rect, int xindex, int yindex, double[] otherargs, int outpindex, double minNeuronOutp, double maxNeuronOutp)

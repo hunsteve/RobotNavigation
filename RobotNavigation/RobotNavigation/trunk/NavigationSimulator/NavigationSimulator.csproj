@@ -16,7 +16,7 @@
     <ManifestCertificateThumbprint>FE743B769FD7736964BEC62D076A8AF925E8C80D</ManifestCertificateThumbprint>
     <ManifestKeyFile>NavigationSimulator_TemporaryKey.pfx</ManifestKeyFile>
     <GenerateManifests>true</GenerateManifests>
-    <SignManifests>true</SignManifests>
+    <SignManifests>false</SignManifests>
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -207,7 +207,6 @@
     <None Include="marker5.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="NavigationSimulator_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Framework.2.0">

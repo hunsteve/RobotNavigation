@@ -188,13 +188,13 @@ void RandomClearWeights(MLP mlp)
 	}
 }
 
-void ClearWeakness(MLP mlp) 
+void RandomClearWeakness(MLP mlp, float min, float max) 
 {
 	if (mlp.isWeakening) {
 		for (int l = 0; l < mlp.layerCount; ++l) //layers
 		{
 			for(int n=0; n<mlp.weakness[l].height; ++n) {
-				mlp.weakness[l].data[n] = 1;
+				mlp.weakness[l].data[n] = min + (max - min) * ((float)rand()/RAND_MAX);
 			}
 		}
 	}
@@ -236,21 +236,25 @@ MLP createMLP(int inputLength ,int* neuronCounts, int layerCount, bool isWeakeni
 	}
 	RandomClearWeights(mlp);
 	if (mlp.isWeakening) {
-		ClearWeakness(mlp);
+		RandomClearWeakness(mlp, 1, 1);
 	}
 	return mlp;
 }
 
-MLP copyMLP(MLP copy) {
-	MLP ret = createMLP(copy.ends[0].height-1, copy.neuronCounts, copy.layerCount, copy.isWeakening);	
+MLP copyMLPandChangeWeakening(MLP copy, bool isWeakening) {
+	MLP ret = createMLP(copy.ends[0].height-1, copy.neuronCounts, copy.layerCount, isWeakening);	
 	for (int i = 0; i < ret.layerCount; ++i)//layers
 	{
 		copyMatrix(copy.weights[i], ret.weights[i]);
-		if (copy.isWeakening) {
-			copyMatrix(copy.weakness[i], ret.weakness[i]);
+		if (isWeakening && copy.isWeakening) {			
+			copyMatrix(copy.weakness[i], ret.weakness[i]);						
 		}
 	}
 	return ret;
+}
+
+MLP copyMLP(MLP copy) {	
+	return copyMLPandChangeWeakening(copy, copy.isWeakening);
 }
 
 void deleteMLP(MLP mlp) 
@@ -296,7 +300,7 @@ int StepWeakness(Matrix wo, Matrix weakness) {
 	float b = 1;
 	for(int i=0; i<weakness.height; ++i) {		
 		if (weakness.data[i] < 1) weakness.data[i] += a;
-		weakness.data[i] += - (wo.data[i] * wo.data[i]) * b;		
+		weakness.data[i] += - abs(wo.data[i]) * b;		
 		if (weakness.data[i] < 0) weakness.data[i] = 0;
 		if (weakness.data[i] > 1) weakness.data[i] = 1;		
 	}

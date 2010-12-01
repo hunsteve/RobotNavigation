@@ -18,10 +18,24 @@ namespace OnlabNeuralis
         private PointF[] graphicCarModelWheelRight;
         private PointF[] graphicCarModelBody;
 
+        private Color mainColor;
+
         int selinside, seloutside;
         const int OUT_WIDTH = 15;
 
+        public CarModel(CarModelState state, Color c)
+        {
+            mainColor = c;
+            init(state);
+        }
+
         public CarModel(CarModelState state)
+        {
+            mainColor = Color.Gray;
+            init(state);
+        }
+
+        private void init(CarModelState state)
         {
             this.state = state;
             int len = (int)(SHAFT_LENGTH / MM_PER_PIXEL / 2);
@@ -43,7 +57,7 @@ namespace OnlabNeuralis
                 new PointF(-len*2, -len + 2),
                 new PointF(-len*2, len - 2),
                 new PointF(-1, len - 2)
-            };           
+            };  
         }
 
 
@@ -80,7 +94,7 @@ namespace OnlabNeuralis
                 BodyTransformed[i].Y = (float)(Math.Sin(state.Angle) * graphicCarModelBody[i].X + Math.Cos(state.Angle) * graphicCarModelBody[i].Y + state.Position.Y / MM_PER_PIXEL + OFFSET_Y);
             }
 
-            SolidBrush b = new SolidBrush(Color.Gray);
+            SolidBrush b = new SolidBrush(mainColor);
             b.Color = Color.FromArgb(alpha, b.Color);
             g.FillPolygon(b, BodyTransformed);
             b = new SolidBrush(Color.Black);

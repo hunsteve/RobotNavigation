@@ -40,6 +40,7 @@ DLLEXPORT Matrix createMatrix(int width, int height);
 DLLEXPORT void deleteMatrix(Matrix m);
 DLLEXPORT void RandomClearWeights(MLP mlp);
 DLLEXPORT MLP createMLP(int inputLength ,int* neuronCounts, int layerCount, bool isWeakening);
+DLLEXPORT MLP copyMLPandChangeWeakening(MLP copy, bool isWeakening);
 DLLEXPORT MLP copyMLP(MLP copy);
 DLLEXPORT void deleteMLP(MLP mlp);
 DLLEXPORT int Sigmoid(Matrix input, Matrix dest);
@@ -54,5 +55,6 @@ DLLEXPORT void Train(MLP mlp, Matrix errors, float mu);
 DLLEXPORT int AddDeltaWeights(MLP src1, MLP src2, MLP dest);
 DLLEXPORT void ClearDeltaWeights(MLP mlp);
 DLLEXPORT float MaxDeltaWeight(MLP mlp);
+DLLEXPORT void RandomClearWeakness(MLP mlp, float min, float max);
 
 

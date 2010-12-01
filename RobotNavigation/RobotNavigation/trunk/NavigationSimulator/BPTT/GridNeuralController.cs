@@ -24,9 +24,11 @@ namespace OnlabNeuralis
         private const int EPOCH_COUNT = 40;
 
         public MLPDll controller;
+        public MLPDll controllerOriginal;
         private IGridModelSimulator model;
 
         public List<GridCarModelState> trainInnerStates;
+        public List<GridCarModelState> trainInnerStatesOrig;
 
         private IObstaclePositionProvider obstacleProvider;
         private ICarPositionProvider carStateProvider;
@@ -44,7 +46,8 @@ namespace OnlabNeuralis
             this.model = model;
             
             
-            controller = new MLPDll(new int[] { 40, 1 }, 5);//4 bemenet a state, 1 kimenet az input                        
+            controller = new MLPDll(new int[] { 40, 1 }, 5, true);//4 bemenet a state, 1 kimenet az input                        
+            controllerOriginal = new MLPDll(controller, false);//4 bemenet a state, 1 kimenet az input                        
             
             obstacleProvider = obstacle;
             carStateProvider = start;
@@ -55,7 +58,7 @@ namespace OnlabNeuralis
 
       
 
-        private double[] obstacleFieldErrorGradient(GridCarModelState state, int time)
+        private static double[] obstacleFieldErrorGradient(IObstaclePositionProvider ops, GridCarModelState state, int time)
         {
             //C = sum((1/d(X) - 1/d(0))^2)
             //dC/dy_x =...
@@ -65,7 +68,7 @@ namespace OnlabNeuralis
             double orxerr = 0;
             double oryerr = 0;
 
-            List<ObstacleState> obstacles = obstacleProvider.GetObstacleStates(0);
+            List<ObstacleState> obstacles = ops.GetObstacleStates(0);
             foreach (ObstacleState obst in obstacles)//cel az origo, tehat az origohoz relativak az akadalyok, origo felfele nez
             {
 
@@ -156,7 +159,10 @@ namespace OnlabNeuralis
                 for (int epoch = 0; epoch < EPOCH_COUNT; ++epoch)
                 {
                     double ii;
-                    error += TrainOneEpoch(mu, out ii, out trainInnerStates);
+                    double ii2;
+                    controller.RandomClearWeakness(0, 1);
+                    error += TrainOneEpoch(controller, model, carStateProvider, finishStateProvider, obstacleProvider, mu, out ii, out trainInnerStates);
+                    TrainOneEpoch(controllerOriginal, model, carStateProvider, finishStateProvider, obstacleProvider, mu, out ii2, out trainInnerStatesOrig);
                     sumSimCount += ii;
                 }
                 error /= EPOCH_COUNT;
@@ -174,7 +180,7 @@ namespace OnlabNeuralis
         }
 
 
-        private double TrainOneEpoch(double mu, out double SumSimCount, out List<GridCarModelState> innerStates)
+        private static double TrainOneEpoch(MLPDll controller, IGridModelSimulator model, ICarPositionProvider cps, IFinishPositionProvider fps, IObstaclePositionProvider ops, double mu, out double SumSimCount, out List<GridCarModelState> innerStates)
         {
 
             int maxSimCount = 100;
@@ -186,7 +192,7 @@ namespace OnlabNeuralis
             MLPDll[] controllers = new MLPDll[maxSimCount];
             IGridModelSimulator[] models = new IGridModelSimulator[maxSimCount];
 
-            GridCarModelState state = GridCarModelState.FromCarModelState(carStateProvider.GetCarState());//new GridCarModelState(1000,new PointD(-1,-1),new PointD(1,0));
+            GridCarModelState state = GridCarModelState.FromCarModelState(cps.GetCarState());
             GridCarModelInput input = new GridCarModelInput();
 
 
@@ -207,7 +213,7 @@ namespace OnlabNeuralis
                 innerStates.Add(state);
 
                 //kozbulso hibak kiszamitasa, itt csak az akadalyoktol valo tavolsag "hibajat" vesszuk figyelembe, irany nem szamit -> hibaja 0                    
-                regularizationErrors.Add(obstacleFieldErrorGradient(state, simCount));
+                regularizationErrors.Add(obstacleFieldErrorGradient(ops, state, simCount));
 
                 //minden pont celtol vett tavolsaga                
                 double disterror = ComMath.Normal(state.TargetDist, GridCarModelState.MIN_DIST, GridCarModelState.MAX_DIST, 0, 1);
@@ -216,8 +222,8 @@ namespace OnlabNeuralis
                 double finishorientationerror = disterror;
                 if (finishorientationerror > 0.05) finishorientationerror = 0;
                 else finishorientationerror = 1;
-                double finishX = Math.Cos(Math.PI - finishStateProvider.GetFinishState(simCount).Angle);
-                double finishY = Math.Sin(Math.PI - finishStateProvider.GetFinishState(simCount).Angle);
+                double finishX = Math.Cos(Math.PI - fps.GetFinishState(simCount).Angle);
+                double finishY = Math.Sin(Math.PI - fps.GetFinishState(simCount).Angle);
 
                 singleErrors.Add(new double[] { -disterror * MAX_NEURON_VALUE ,                                                                                                 
                                                 orientationerror*ComMath.Normal(1 - state.TargetOrientation.X,GridCarModelState.MIN_OR_XY, GridCarModelState.MAX_OR_XY, MIN_NEURON_VALUE, MAX_NEURON_VALUE), 
