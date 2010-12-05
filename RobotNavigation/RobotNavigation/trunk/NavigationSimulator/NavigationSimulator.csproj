@@ -103,9 +103,11 @@
     <Compile Include="BPTT\MathModelSimulator.cs" />
     <Compile Include="BPTT\NeuralController.cs" />
     <Compile Include="BPTT\NeuralModelSimulator.cs" />
+    <Compile Include="BPTT\PolarGrid.cs" />
     <Compile Include="GRAPHICSMODEL\CarModel.cs" />
     <Compile Include="GRAPHICSMODEL\FinishModel.cs" />
     <Compile Include="GRAPHICSMODEL\FinishState.cs" />
+    <Compile Include="GRAPHICSMODEL\GridObstacleState.cs" />
     <Compile Include="GRAPHICSMODEL\ICarPositionProvider.cs" />
     <Compile Include="GRAPHICSMODEL\IDragable.cs" />
     <Compile Include="GRAPHICSMODEL\IFinishPositionProvider.cs" />

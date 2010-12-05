@@ -158,7 +158,7 @@ int concatDown(Matrix m1, Matrix m2, Matrix dest) {
 	return 0;
 }
 
-float randomWeight()
+float randomWeight(float max)
 {
     float r;
     do
@@ -166,7 +166,7 @@ float randomWeight()
         r = (((float)rand()/RAND_MAX) - 0.5f)*2;
     }
     while (abs(r) < 0.00001f);
-    return r * 0.05f;
+    return r * max;
 }
 
 void RandomClearWeights(MLP mlp)
@@ -182,7 +182,7 @@ void RandomClearWeights(MLP mlp)
 		{
 			for (int k = 0; k < h; ++k)//inputs
 			{
-				mlp.weights[l].data[i * h + k]=  randomWeight();//random
+				mlp.weights[l].data[i * h + k]=  randomWeight(0.05f);//random
 			}
 		}
 	}
@@ -302,7 +302,7 @@ int StepWeakness(Matrix wo, Matrix weakness) {
 		if (weakness.data[i] < 1) weakness.data[i] += a;
 		weakness.data[i] += - abs(wo.data[i]) * b;		
 		if (weakness.data[i] < 0) weakness.data[i] = 0;
-		if (weakness.data[i] > 1) weakness.data[i] = 1;		
+		if (weakness.data[i] > 1) weakness.data[i] = 1;				
 	}
 	return 0;
 }

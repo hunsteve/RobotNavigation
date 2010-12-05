@@ -71,10 +71,7 @@ namespace OnlabNeuralis
             List<ObstacleState> obstacles = ops.GetObstacleStates(0);
             foreach (ObstacleState obst in obstacles)//cel az origo, tehat az origohoz relativak az akadalyok, origo felfele nez
             {
-
-
                 double d = ComMath.Normal(Math.Sqrt(obst.pp.position.X * obst.pp.position.X + obst.pp.position.Y * obst.pp.position.Y), GridCarModelState.MIN_DIST, GridCarModelState.MAX_DIST, 0, MAX_NEURON_VALUE);
-
                 double a = ComMath.Normal(state.TargetDist , GridCarModelState.MIN_DIST, GridCarModelState.MAX_DIST, 0, MAX_NEURON_VALUE);
 
                 double ang = Math.PI - (Math.Atan2(obst.pp.position.Y, obst.pp.position.X) + Math.PI) + state.TargetAngle - state.TargetFinishAngle;
@@ -110,24 +107,36 @@ namespace OnlabNeuralis
             return new double[] { -ksi * disterr, -ksi * orxerr, -ksi * oryerr };
         }
 
-        private double obstacleFieldError(GridCarModelState state)
+        //private double obstacleFieldError(GridCarModelState state)
+        //{
+        //    double err = 0;
+        //    List<ObstacleState> obstacles = obstacleProvider.GetObstacleStates(1);
+        //    foreach (ObstacleState obst in obstacles)
+        //    {
+        //        double d = ComMath.Normal(state.TargetDist, GridCarModelState.MIN_DIST, GridCarModelState.MAX_DIST, MIN_NEURON_VALUE, MAX_NEURON_VALUE);
+        //        double x = Math.Cos(state.TargetAngle - state.TargetFinishAngle) * d;
+        //        double y = Math.Sin(state.TargetAngle - state.TargetFinishAngle) * d;
+
+        //        double x0 = ComMath.Normal(obst.pp.position.X, CarModelState.MIN_POS_X, CarModelState.MAX_POS_X, MIN_NEURON_VALUE, MAX_NEURON_VALUE);
+        //        double y0 = ComMath.Normal(obst.pp.position.Y, CarModelState.MIN_POS_X, CarModelState.MAX_POS_X, MIN_NEURON_VALUE, MAX_NEURON_VALUE);
+
+        //        double dist = Math.Sqrt((x - x0) * (x - x0) + (y - y0) * (y - y0));
+        //        err += Math.Pow(1 / dist - 1 / obst.radius, 2);
+        //    }
+
+        //    return err;
+        //}
+
+        private static PolarGrid obstaclePolarGrid(IObstaclePositionProvider ops, GridCarModelState state)
         {
-            double err = 0;
-            List<ObstacleState> obstacles = obstacleProvider.GetObstacleStates(1);
+            List<ObstacleState> obstacles = ops.GetObstacleStates(0);
+            PolarGrid pg = new PolarGrid();
             foreach (ObstacleState obst in obstacles)
             {
-                double d = ComMath.Normal(state.TargetDist, GridCarModelState.MIN_DIST, GridCarModelState.MAX_DIST, MIN_NEURON_VALUE, MAX_NEURON_VALUE);
-                double x = Math.Cos(state.TargetAngle - state.TargetFinishAngle) * d;
-                double y = Math.Sin(state.TargetAngle - state.TargetFinishAngle) * d;
-
-                double x0 = ComMath.Normal(obst.pp.position.X, CarModelState.MIN_POS_X, CarModelState.MAX_POS_X, MIN_NEURON_VALUE, MAX_NEURON_VALUE);
-                double y0 = ComMath.Normal(obst.pp.position.Y, CarModelState.MIN_POS_X, CarModelState.MAX_POS_X, MIN_NEURON_VALUE, MAX_NEURON_VALUE);
-
-                double dist = Math.Sqrt((x - x0) * (x - x0) + (y - y0) * (y - y0));
-                err += Math.Pow(1 / dist - 1 / obst.radius, 2);
+                GridObstacleState gos = GridObstacleState.FromObstacleState(obst, state);
+                pg.AddObstacle(gos);
             }
-
-            return err;
+            return pg;
         }
 
 
