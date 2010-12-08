@@ -21,8 +21,8 @@ namespace NavigationSimulator
 
         public static GridObstacleState FromObstacleState(ObstacleState obst, GridCarModelState state)
         {            
-            double d = ComMath.Normal(Math.Sqrt(obst.pp.position.X * obst.pp.position.X + obst.pp.position.Y * obst.pp.position.Y), GridCarModelState.MIN_DIST, GridCarModelState.MAX_DIST, 0, MAX_NEURON_VALUE);
-            double a = ComMath.Normal(state.TargetDist, GridCarModelState.MIN_DIST, GridCarModelState.MAX_DIST, 0, MAX_NEURON_VALUE);
+            double d = ComMath.Normal(Math.Sqrt(obst.pp.position.X * obst.pp.position.X + obst.pp.position.Y * obst.pp.position.Y), GridCarModelState.MIN_DIST, GridCarModelState.MAX_DIST, 0, 1);
+            double a = ComMath.Normal(state.TargetDist, GridCarModelState.MIN_DIST, GridCarModelState.MAX_DIST, 0, 1);
             double ang = Math.PI - (Math.Atan2(obst.pp.position.Y, obst.pp.position.X) + Math.PI) + state.TargetAngle - state.TargetFinishAngle;
             if (ang > Math.PI) ang -= 2 * Math.PI;
             if (ang < -Math.PI) ang += 2 * Math.PI;

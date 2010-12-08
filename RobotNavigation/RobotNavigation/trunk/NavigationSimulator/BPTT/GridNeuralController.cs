@@ -21,7 +21,7 @@ namespace OnlabNeuralis
 
         public const double MAX_NEURON_VALUE = 10;
         public const double MIN_NEURON_VALUE = -10;
-        private const int EPOCH_COUNT = 40;
+        private const int EPOCH_COUNT = 100;
 
         public MLPDll controller;
         public MLPDll controllerOriginal;
@@ -169,9 +169,9 @@ namespace OnlabNeuralis
                 {
                     double ii;
                     double ii2;
-                    controller.RandomClearWeakness(0, 1);
-                    error += TrainOneEpoch(controller, model, carStateProvider, finishStateProvider, obstacleProvider, mu, out ii, out trainInnerStates);
-                    TrainOneEpoch(controllerOriginal, model, carStateProvider, finishStateProvider, obstacleProvider, mu, out ii2, out trainInnerStatesOrig);
+                    //controller.RandomClearWeakness(0, 1);
+                    error += TrainOneEpoch(controller, model, carStateProvider, finishStateProvider, obstacleProvider, mu, Math.Min(epoch * 2 + 1, EPOCH_COUNT), out ii, out trainInnerStates);
+                    TrainOneEpoch(controllerOriginal, model, carStateProvider, finishStateProvider, obstacleProvider, mu, Math.Min(epoch*2+1, EPOCH_COUNT), out ii2, out trainInnerStatesOrig);
                     sumSimCount += ii;
                 }
                 error /= EPOCH_COUNT;
@@ -189,10 +189,8 @@ namespace OnlabNeuralis
         }
 
 
-        private static double TrainOneEpoch(MLPDll controller, IGridModelSimulator model, ICarPositionProvider cps, IFinishPositionProvider fps, IObstaclePositionProvider ops, double mu, out double SumSimCount, out List<GridCarModelState> innerStates)
-        {
-
-            int maxSimCount = 100;
+        private static double TrainOneEpoch(MLPDll controller, IGridModelSimulator model, ICarPositionProvider cps, IFinishPositionProvider fps, IObstaclePositionProvider ops, double mu, int maxSimCount, out double SumSimCount, out List<GridCarModelState> innerStates)
+        {    
             double sumSimCount = 0;
             double error = 0;
             innerStates = new List<GridCarModelState>();

@@ -300,7 +300,7 @@ int StepWeakness(Matrix wo, Matrix weakness) {
 	float b = 1;
 	for(int i=0; i<weakness.height; ++i) {		
 		if (weakness.data[i] < 1) weakness.data[i] += a;
-		weakness.data[i] += - abs(wo.data[i]) * b;		
+		weakness.data[i] += - abs(wo.data[i]*wo.data[i]) * b;		
 		if (weakness.data[i] < 0) weakness.data[i] = 0;
 		if (weakness.data[i] > 1) weakness.data[i] = 1;				
 	}
@@ -318,14 +318,14 @@ void ForwardPorpagate(MLP mlp)
 {
 	for (int l = 0; l < mlp.layerCount; ++l) //layers
 	{
-		multMatrix(mlp.weights[l], mlp.ends[l], mlp.sums[l]);
-		Sigmoid(mlp.sums[l], mlp.ends[l + 1]);
+		multMatrix(mlp.weights[l], mlp.ends[l], mlp.sums[l]);		
 		if (mlp.isWeakening) {
-			mlp.ends[l + 1].height--;//bias miatt
-			elementMult(mlp.ends[l + 1], mlp.weakness[l], mlp.ends[l + 1]);			
-			StepWeakness(mlp.ends[l + 1], mlp.weakness[l]);
-			mlp.ends[l + 1].height++;//bias miatt
+			mlp.sums[l].height--;//bias miatt
+			elementMult(mlp.sums[l], mlp.weakness[l], mlp.sums[l]);			
+			StepWeakness(mlp.sums[l], mlp.weakness[l]);
+			mlp.sums[l].height++;//bias miatt
 		}		
+		Sigmoid(mlp.sums[l], mlp.ends[l + 1]);
 	}
 }
 
