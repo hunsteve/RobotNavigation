@@ -1,53 +1,39 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
-using System.IO;
-using System.Globalization;
-using System.Drawing;
-using System.Drawing.Imaging;
-using System.Timers;
-using System.Threading;
-using System.Runtime.CompilerServices;
-using NavigationSimulator;
+using OnlabNeuralis;
 using NeuralNetworkLib;
+using System.Threading;
 
-
-namespace OnlabNeuralis
+namespace NavigationSimulator
 {
- 
-    public class GridNeuralController
+    class OfflineGridNeuralController
     {
-
-
         public const double MAX_NEURON_VALUE = 10;
         public const double MIN_NEURON_VALUE = -10;
         private const int EPOCH_COUNT = 100;
 
         public MLPDll controller;
         public MLPDll controllerOriginal;
-        private IGridModelSimulator model;
-
-        public List<GridCarModelState> trainInnerStates;
-        public List<GridCarModelState> trainInnerStatesOrig;
+        private IGridModelSimulator model;      
 
         private IObstaclePositionProvider obstacleProvider;
         private ICarPositionProvider carStateProvider;
         private IFinishPositionProvider finishStateProvider;
 
         bool trainingStopped;
-        Thread trainThread;
-        NewTrainEpochDelegate callback;
+        Thread trainThread;        
 
         public double mu;
 
 
-        public GridNeuralController(IGridModelSimulator model, IObstaclePositionProvider obstacle, ICarPositionProvider start, IFinishPositionProvider finish)
+        public OfflineGridNeuralController(IGridModelSimulator model, IObstaclePositionProvider obstacle, ICarPositionProvider start, IFinishPositionProvider finish)
         {
             this.model = model;
             
             
-            controller = new MLPDll(new int[] { 40, 1 }, 5, true);//4 bemenet a state, 1 kimenet az input                        
-            controllerOriginal = new MLPDll(controller, false);//4 bemenet a state, 1 kimenet az input                        
+            controller = new MLPDll(new int[] { 40, 1 }, 5, false);//bemenet: 5 - car state, 12 - polargrid                      
             
             obstacleProvider = obstacle;
             carStateProvider = start;
@@ -412,10 +398,6 @@ namespace OnlabNeuralis
                        
             model.SimulateModel(state, outInput, out outState);
         }
-
-
-
-
-
+    
     }
 }

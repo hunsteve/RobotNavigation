@@ -138,6 +138,7 @@
     <Compile Include="MARKERFINDER\CaptureDeviceDirectShow.cs" />
     <Compile Include="MARKERFINDER\MarkerFinder.cs" />
     <Compile Include="MLPDLL\MLPDll.cs" />
+    <Compile Include="BPTT\OfflineGridNeuralController.cs" />
     <Compile Include="PREDICTION\PositionAndOrientationPredictor.cs" />
     <Compile Include="PREDICTION\PositionPredictor.cs" />
     <Compile Include="PREDICTION\PredictorMLP.cs" />
