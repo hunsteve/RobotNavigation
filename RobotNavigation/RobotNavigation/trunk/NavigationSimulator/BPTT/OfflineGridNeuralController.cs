@@ -126,7 +126,7 @@ namespace NavigationSimulator
         }
 
 
-        public delegate void NewTrainEpochDelegate();
+        public delegate void NewTrainEpochDelegate(); 
 
         public void StartTrain(NewTrainEpochDelegate aCallback)
         {
