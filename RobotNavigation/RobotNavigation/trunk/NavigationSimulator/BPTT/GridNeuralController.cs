@@ -170,8 +170,8 @@ namespace OnlabNeuralis
                     double ii;
                     double ii2;
                     //controller.RandomClearWeakness(0, 1);
-                    error += TrainOneEpoch(controller, model, carStateProvider, finishStateProvider, obstacleProvider, mu, 100, out ii, out trainInnerStates);
-                    TrainOneEpoch(controllerOriginal, model, carStateProvider, finishStateProvider, obstacleProvider, mu, 100, out ii2, out trainInnerStatesOrig);
+                    error += TrainOneEpoch(controllerOriginal, model, carStateProvider, finishStateProvider, obstacleProvider, mu, 100, out ii, out trainInnerStates);
+                    //TrainOneEpoch(controllerOriginal, model, carStateProvider, finishStateProvider, obstacleProvider, mu, 100, out ii2, out trainInnerStatesOrig);
                     sumSimCount += ii;
                 }
                 error /= EPOCH_COUNT;

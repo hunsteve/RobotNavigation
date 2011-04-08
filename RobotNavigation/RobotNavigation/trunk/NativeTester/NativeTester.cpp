@@ -30,22 +30,33 @@ int main(int argc, char* argv[])
 	Matrix input = createMatrix(1,1);
 	Matrix error = createMatrix(1,1);
 
-	for (int k=0; k<3000; ++k) {
+	for (int k=0; k<10000; ++k) {
 		for (int j=0; j<nTrainData; ++j) {
-			input.data[0] = x[j];
+			int ll = j;//rand()*nTrainData/RAND_MAX;
+			input.data[0] = x[ll];
 			Matrix output = Output(mlp,input);
-			error.data[0] = y[j] - output.data[0];
-			Train(mlp, error, 0.05);
+			error.data[0] = y[ll]-output.data[0];
+			Train(mlp, error, 0.01);
 		}
 		if (k%100 == 0) cout << k << "\r\n";		
 	}
 
+	
 	cout << "Training ended!\r\n";		
+
+	for (int a=0; a<mlp.weights[0].height; ++a) {
+		for (int b=0; b<mlp.weights[0].width; ++b) {			
+			cout << mlp.weights[0].data[a * mlp.weights[0].width + b] << "  ";		
+		}		
+		cout << "\r\n";		
+	}
+
+	cout << "Weights ended!\r\n";		
 
 	for (int j=0; j<nTrainData; ++j) {
 		input.data[0] = x[j];
 		Matrix output = Output(mlp,input);
-		cout << output.data[0] << "  " << y[j] << "\r\n";		
+		cout << output.data[0] << "  " << y[j] << "  " << x[j] << "  " << j << "\r\n";		
 	}
 
 

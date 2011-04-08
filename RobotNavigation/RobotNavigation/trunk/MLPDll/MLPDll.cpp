@@ -165,7 +165,7 @@ float randomWeight(float max)
     {
         r = (((float)rand()/RAND_MAX) - 0.5f)*2;
     }
-    while (abs(r) < 0.00001f);
+    while (abs(r) < 0.001f);
     return r * max;
 }
 
@@ -182,7 +182,7 @@ void RandomClearWeights(MLP mlp)
 		{
 			for (int k = 0; k < h; ++k)//inputs
 			{
-				mlp.weights[l].data[i * h + k]=  randomWeight(0.05f);//random
+				mlp.weights[l].data[i * h + k]=  randomWeight(0.5f);//random
 			}
 		}
 	}
