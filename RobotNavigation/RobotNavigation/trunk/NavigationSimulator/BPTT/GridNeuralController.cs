@@ -46,8 +46,8 @@ namespace OnlabNeuralis
             this.model = model;
             
             
-            controller = new MLPDll(new int[] { 40, 1 }, 5, true);//4 bemenet a state, 1 kimenet az input                        
-            controllerOriginal = new MLPDll(controller, false);//4 bemenet a state, 1 kimenet az input                        
+            //controller = new MLPDll(new int[] { 40, 1 }, 5, true);//4 bemenet a state, 1 kimenet az input                        
+            controllerOriginal = new MLPDll(new int[] { 40, 1 }, 5, false);//4 bemenet a state, 1 kimenet az input                        
             
             obstacleProvider = obstacle;
             carStateProvider = start;
@@ -393,7 +393,7 @@ namespace OnlabNeuralis
 
         public void SimulateOneStep(GridCarModelState state, out GridCarModelInput outInput, out GridCarModelState outState)
         {
-            GridNeuralController.SimulateOneStep(this.controller, this.model, state, out outInput, out outState);
+            GridNeuralController.SimulateOneStep(this.controllerOriginal, this.model, state, out outInput, out outState);
         }
 
         public static void SimulateOneStep(MLPDll controller, IGridModelSimulator model, GridCarModelState state, out GridCarModelInput outInput, out GridCarModelState outState)
