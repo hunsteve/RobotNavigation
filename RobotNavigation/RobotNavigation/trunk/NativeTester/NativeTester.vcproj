@@ -6,7 +6,7 @@
 	ProjectGUID="{EFB43FBA-0628-4360-8619-589BDF48BEE4}"
 	RootNamespace="NativeTester"
 	Keyword="Win32Proj"
-	TargetFrameworkVersion="131072"
+	TargetFrameworkVersion="196613"
 	>
 	<Platforms>
 		<Platform
@@ -41,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(SolutionDir)\MarkerFinderLib\&quot;"
+				AdditionalIncludeDirectories="&quot;$(SolutionDir)\MarkerFinderLib\&quot;,&quot;$(SolutionDir)\MLPDll\&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -115,7 +115,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
-				AdditionalIncludeDirectories="&quot;$(SolutionDir)\MarkerFinderLib\&quot;"
+				AdditionalIncludeDirectories="&quot;$(SolutionDir)\MarkerFinderLib\&quot;,&quot;$(SolutionDir)\MLPDll\&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
@@ -166,8 +166,8 @@
 	</Configurations>
 	<References>
 		<ProjectReference
-			ReferencedProjectIdentifier="{FF3E7781-1339-44CC-95B4-254A38EFE604}"
-			RelativePathToProject=".\MarkerFinderLib\MarkerFinderLib.vcproj"
+			ReferencedProjectIdentifier="{438D368A-CC81-47C3-9A2A-04F3771E23FA}"
+			RelativePathToProject=".\MLPDll\MLPDll.vcproj"
 		/>
 	</References>
 	<Files>
