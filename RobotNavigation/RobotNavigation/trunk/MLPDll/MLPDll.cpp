@@ -169,21 +169,41 @@ float randomWeight(float max)
     return r * max;
 }
 
+int RandomSign() {
+	return (rand()%2) * 2 - 1;
+}
+
 void RandomClearWeights(MLP mlp)
 {
 	long ltime = time(NULL);
 	int stime = (unsigned) ltime/2;
-	srand(stime);
-	for (int l = 0; l < mlp.layerCount; ++l) //layers
+	srand(stime);	
+
+	//input layer
+	int w = mlp.weights[0].width;
+	int h = mlp.weights[0].height;
+    float bias = w;//large input neuron bias
+	for (int i = 0; i < w; ++i) //neurons
 	{
-		int w = mlp.weights[l].width;
-		int h = mlp.weights[l].height;
+		for (int k = 0; k < h - 1; ++k)//inputs
+		{
+			mlp.weights[0].data[i * h + k] = randomWeight(1); //large random input neuron weight
+		}
+		mlp.weights[0].data[i * h + h - 1] = bias * RandomSign(); bias -= 2;//bias
+	}
+
+	for (int l = 1; l < mlp.layerCount; ++l) //hidden + output layers
+	{
+		w = mlp.weights[l].width;
+		h = mlp.weights[l].height;
+	    bias = (float)w / 20;//small hidden neuron bias
 		for (int i = 0; i < w; ++i) //neurons
 		{
-			for (int k = 0; k < h; ++k)//inputs
+			for (int k = 0; k < h - 1; ++k)//inputs
 			{
-				mlp.weights[l].data[i * h + k]=  randomWeight(0.5f);//random
+				mlp.weights[l].data[i * h + k] = randomWeight(0.1f);//random
 			}
+			mlp.weights[l].data[i * h + h - 1] = bias * RandomSign(); bias -= 0.1;//bias
 		}
 	}
 }
