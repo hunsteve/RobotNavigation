@@ -30,7 +30,7 @@ int main(int argc, char* argv[])
 	Matrix input = createMatrix(1,1);
 	Matrix error = createMatrix(1,1);
 
-	for (int k=0; k<10000; ++k) {
+	for (int k=0; k<3000; ++k) {
 		for (int j=0; j<nTrainData; ++j) {
 			int ll = j;//rand()*nTrainData/RAND_MAX;
 			input.data[0] = x[ll];
