@@ -25,7 +25,7 @@ Installation and build
 
 Videos
 ------
-1. https://www.youtube.com/watch?v=cIKDyRJl37U
-2. https://www.youtube.com/watch?v=mY1dQg8ODJk
+1. https://www.youtube.com/watch?v=mY1dQg8ODJk
+2. https://www.youtube.com/watch?v=cIKDyRJl37U
 3. https://www.youtube.com/watch?v=1-YcDvLpwv4
 4. https://www.youtube.com/watch?v=SfX7dxyd4Mo
