@@ -2,7 +2,7 @@ RobotNavigation
 ===============
 This is a research project for robotic navigation with neural networks written in C# and C. The goal is to navigate a mobile robot between static and moving obstacles by performing the motion planning with an MLP.
 
-The solution contains several projects, including two C libraries, one very lightweight MLP implementation, and the image processing library that is used for the localization. See the specific readme files in the project directories.
+The solution contains several projects, including two C libraries, one very lightweight [MLP implementation](https://github.com/hunsteve/RobotNavigation/tree/master/MLPDll), and the [image processing library](https://github.com/hunsteve/RobotNavigation/tree/master/MarkerFinderLib) that is used for the localization. See the specific readme files in the project directories.
 
 Motion planning
 ---------------
@@ -19,7 +19,7 @@ Read more here: [István Engedy, Gábor Horváth: *Global, camera-based localiza
 Installation and build
 ----------------------
 1. Clone from git
-2. Open the solution with Visual Studio 2010 or later
+2. Open the solution with Visual Studio 2008 or later
 3. Build the solution
 4. Run the project NavigationSimulator
 
