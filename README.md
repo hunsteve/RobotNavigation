@@ -20,8 +20,8 @@ Installation and build
 ----------------------
 1. Clone from git
 2. Open the solution with Visual Studio 2008 or later
-3. Build the solution
-4. Run the project NavigationSimulator
+3. Build the solution (release, x86)
+4. Select the project NavigationSimulator as startup project, and run it
 
 Videos
 ------
